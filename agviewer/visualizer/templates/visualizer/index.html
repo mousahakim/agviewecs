@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+ {%load staticfiles%}
+ {%load morph2o_extras%}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Mosaddek">
+    <meta name="keyword" content="Agviewer.net, morph2o, morph2ola, agviewer, ag-viewer.com">
+    <link rel="shortcut icon" href="{% static 'visualizer/img/favicon.png' %}">
+
+    <title>AgViewer 1.0</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'visualizer/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'visualizer/css/bootstrap-reset.css' %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static 'visualizer/assets/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <!-- <link href="{% static 'visualizer/assets/jquery-easy-pie-chart/jquery.easy-pie-chart.css' %}" rel="stylesheet" type="text/css" media="screen"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'visualizer/assets/bootstrap-daterangepicker/daterangepicker-bs3.css' %}" /> -->
+    <link rel="stylesheet" href="{% static 'visualizer/css/daterangepicker.css' %}" type="text/css">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'visualizer/assets/bootstrap-colorpicker/css/colorpicker.css' %}" /> -->
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'visualizer/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'visualizer/css/style-responsive.css' %}" rel="stylesheet" />
+    <link href="{% static 'visualizer/amcharts/plugins/export/export.css' %}" rel="stylesheet" type="text/css">
+    <!-- <link href="{% static 'visualizer/assets/jquery-multi-select/css/multi-select.css' %}" rel="stylesheet" type="text/css"> -->
+    <!-- <link href="{% static 'visualizer/css/slider.css' %}" rel="stylesheet"> -->
+    <!-- <link href="{% static 'visualizer/css/chosen.min.css' %}" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="{% static 'visualizer/css/kendo.bootstrap.min.css' %}" /> -->
+    <link rel="stylesheet" href="{% static 'visualizer/css/kendo.common.min.css' %}" />
+    <!-- <link rel="stylesheet" href="{% static 'visualizer/css/kendo.common.core.min.css' %}" /> -->
+    <link rel="stylesheet" href="{% static 'visualizer/css/kendo.flat.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'visualizer/css/kendo.flat.mobile.min.css' %}"/>
+    <!-- openlayers  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css" type="text/css">
+    <link rel="stylesheet" href="{% static 'visualizer/css/gis.css' %}"/>
+
+    
+    <style type="text/css">
+      #blue-s .slider-selection {
+        background: #60A2D4;
+      }
+      #green-s .slider-selection {
+        background: #60d4cc;
+      }
+      #yellow-s .slider-selection {
+        background: #f98c2e;
+      }
+      #red-s .slider-selection {
+        background: #f6664d;
+      }
+      /* JUST FOR THE NOTIFICATIONS */
+       .growl {
+          position: absolute;
+          right: 15px;
+          top: 15px;
+          z-index: 1337;
+      }
+      .growl .alert {
+          position: fixed;
+          width: 250px;
+          opacity: 0.8;
+          cursor: pointer;
+      }
+      /*.chosen-rtl .chosen-drop { left: -9000px; }*/
+      
+      .k-multiselect-wrap {
+        box-shadow: 0 0 0 0 !important;
+      }
+      .colorpicker {
+        z-index: 9999;
+      }
+      .add-on {
+        float: right;
+        padding-right: 33px;
+      }
+      .help-block {
+        font-size: 10px !important;
+        margin-bottom: 0px;
+      }
+      .jscolor {
+        z-index: 1052 !important;
+      }
+    </style>
+    <script type="text/javascript">
+    var url = "{% url 'get_widget' %}";
+    var url_get_widgets = "{% url 'get_widgets' %}";
+    var url_get_settings = "{% url 'get_settings' %}";
+    var url_remove_widget = "{% url 'remove_widget' %}";
+    var url_widget_lst = "{% url 'widget_lst' %}";
+    var url_widget = "{% url 'widget' %}";
+    
+    
+    </script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <div id="map-dialog"></div>
+ <!-- Dashboard pop-up modal -->
+  <div aria-hidden="true" role="dialog" tabindex="-1" id="add-dashboard-modal" class="modal fade">
+    <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Enter dashboard name</h4>
+              </div>
+              <div class="modal-body">
+
+                    <div class="form-group col-md-12">
+                      <input type="text" class="dashboard-name form-control" placeholder="e.g. Dash 1">
+                    </div>
+                    <br/>
+              </div>
+              
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                  <button class="btn btn-success submit" type="button">Add</button>
+              </div>
+        </div>
+    </div>
+  </div>
+  <!-- end dashboard pop-up -->
+  <!-- add stat widget pop-up modal -->
+  <div aria-hidden="true" role="dialog" tabindex="-1" id="add-stat-widget-modal" class="modal fade">
+    <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">New Widget</h4>
+              </div>
+              <div class="modal-body">
+
+                    <!-- <div class="form-group col-md-12"> -->
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Title
+                    </label>
+                    <div class="col-lg-10">
+                      <input type="text" class="stat-widget-name form-control" placeholder="e.g. Stat #1">  
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Color
+                    </label>
+                    <div class="col-lg-10" id="stat-widget-color-ctn">
+                      <!-- <input value="1064AD" class="form-control input-sm stat-widget-color "> -->
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Index
+                    </label>
+                    <div class="col-lg-10">
+                      <input type="number" class="stat-widget-index form-control" placeholder="e.g. 5">  
+                    </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                  <button class="btn btn-success submit" type="button">Add</button>
+              </div>
+        </div>
+    </div>
+  </div>
+  <!-- end add stat widget pop-up modal -->
+  <!-- add stat data pop-up modal -->
+  <div aria-hidden="true" role="dialog" tabindex="-1" id="add-stat-data-modal" class="modal fade">
+    <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Add stat</h4>
+              </div>
+              <div class="modal-body">
+
+                    <!-- <div class="form-group col-md-12"> -->
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Name
+                    </label>
+                    <div class="col-lg-10">
+                      <input type="text" class="stat-data-name form-control" placeholder="e.g. Min Temp">  
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Fn.
+                    </label>
+                    <div class="col-lg-10" id="stat-data-color-ctn">
+                      <select multiple="multiple" class="multi-select" id="stat-data-select" name="">
+                        <option></option>
+                        <option value="min">Min </option>
+                        <option value="max">Max </option>
+                        <option value="avg">Avg </option>
+                        <option value="accumulation">Sum</option>
+                        <option value="chill_hours_acc">Chill hours accu.</option>
+                        <option value="degree_days_acc">Degree days accu.</option>
+                        <option value="chill_portions">Chill portions</option>
+                        <option value="last_record">Last record</option>
+                    </select>
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Sensor
+                    </label>
+                    <div class="col-lg-10">
+                      <select multiple="multiple" class="multi-select" id="stat-sensor-select" name="">
+                        <optgroup label="Field Climate">
+                              {% for station in fc_stations %}
+                                  <optgroup label="{{station.name}} [{{station.station}}]">
+                                      {% for k, v in station.sensors.iteritems %}
+                                          <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                      {% endfor %}
+                                  </optgroup>
+                              {% endfor %}
+                          </optgroup>
+                          <optgroup label="Decagon">
+                              {% for station in dg_stations %}
+                                  <optgroup label="{{station.name}} [{{station.station}}]">
+                                      {% for k, v in station.sensors.iteritems %}   
+                                          <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                      {% endfor %}
+                                  </optgroup>
+                              {% endfor %}   
+                          </optgroup>
+                    </select> 
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Extract <span style="font-size: 10px;">(optional)</span>
+                    </label>
+                    <div class="col-lg-10">
+                      <input type="text" class="stat-data-extract form-control" placeholder="e.g. temp or moisture">  
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-lg-2">
+                      Chart
+                    </label>
+                    <div class="col-lg-10">
+                      <select class="multi-select " id="stat-chart-select">
+                        {% for widget in chart_widgets %}
+                          <option value="{{widget.widget_id}}">{{widget.widget.title}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row top-buffer-5">
+                    <label class="control-label col-md-2">Range</label>
+                      <div class="col-md-10">
+                        <div id="statdaterange" class="pull-right" style="font-size:11px;background: #fff; cursor: pointer; padding: 2px 2px; border: 1px solid #ccc; width: 100%">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                            <span></span> <b class="caret"></b>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                  <button class="btn btn-danger delete" type="button">Delete</button>
+                  <button class="btn btn-success submit" type="button">Add</button>
+              </div>
+        </div>
+    </div>
+  </div>
+  <!-- end add stat data pop-up modal -->
+
+  <div class="growl"></div>
+  <section id="container" >
+      <!--header start-->
+      <header class="header white-bg">
+              <div class="sidebar-toggle-box">
+                  <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+              </div>
+            <!--logo start-->
+            <a href="index.html" class="logo">&nbsp;<img src="{% static 'visualizer/img/logo-tiny.png' %}" height="60px"></a>
+            <!--logo end-->
+            <div class="nav notify-row" id="top_menu">
+                <!--  notification start -->
+                <ul class="nav top-menu">
+                    <!-- settings start -->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="fa fa-plus"></i>
+<!--                             <span class="badge bg-success">6</span>
+ -->                        </a>
+                        <ul class="dropdown-menu extended tasks-bar">
+                            <div class="notify-arrow notify-arrow-green"></div>
+                            <li>
+                                <p class="green">Add new widget</p>
+                            </li>
+                            
+                            <li class="external">
+                                <a href="javascript:;" onclick="addChartWidget()">&nbsp; 
+                                  <i class="fa fa-bar-chart"></i>
+                                  &nbsp;
+                                   Chart Widget
+                                </a>
+                            </li>
+                            <li class="external">
+                               <a href="javascript:;" data-toggle="modal" operation="ADD_NEW" data-target="#add-stat-widget-modal">&nbsp; 
+                               <i class="fa fa-th-large"></i>
+                               &nbsp; Stat Widget
+                               </a>
+                            </li>
+                            <li class="external">
+                               <a href="javascript:;" id="add-gis-widget" >&nbsp; 
+                               <i class="fa fa-map-marker"></i>
+                               &nbsp; GIS Widget
+                               </a>
+                            </li>
+                            <li class="external">
+                               <a data-toggle="modal" data-target="#add-dashboard-modal" href="javascript:;">&nbsp; 
+                               <i class="fa fa-dashboard"></i>
+                               &nbsp; Dashboard
+                               </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- settings end -->
+                    <!-- inbox dropdown start-->
+                    <li id="header_inbox_bar" class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="fa fa-envelope-o"></i>
+                            <span id="message-badge" class="badge bg-important"></span>
+                        </a>
+                        <ul class="dropdown-menu extended inbox">
+                            <div class="notify-arrow notify-arrow-red"></div>
+                            <li>
+                                <p class="red">You have 0 unread messages</p>
+                            </li>
+                           
+                            <li>
+                                <a href="#">See all messages</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- inbox dropdown end -->
+                    <!-- notification dropdown start-->
+                    <li id="header_inbox_bar" class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle notification-dropdown" href="#">
+
+                            <i class="fa fa-bell-o"></i>
+                            <span id="alert-badge" class="badge bg-warning"></span>
+                        </a>
+                        <ul class="dropdown-menu extended inbox" id="alert-list">
+                            <div class="notify-arrow notify-arrow-grey"></div>
+                            <li>
+                                <p class="grey">You have 0 unread notifications</p>
+                            </li>
+                            <li>
+                                <a href="#">See all notifications</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- notification dropdown end -->
+                </ul>
+                <!--  notification end -->
+            </div>
+            <div class="top-nav ">
+                <!--search & user info start-->
+                <ul class="nav pull-right top-menu">
+                    <li>
+                        <input type="text" class="form-control search" placeholder="Search">
+                    </li>
+                    <!-- user login dropdown start-->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <b class="fa fa-user"></b>
+                            <span class="username">{{name}}</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu extended logout">
+                            <div class="log-arrow-up"></div>
+                            <li><a href="#"><i class=" fa fa-suitcase"></i>Profile</a></li>
+                            <li><a href="{% url 'settings' %}"><i class="fa fa-cog"></i> Settings</a></li>
+                            <li><a href="#"><i class="fa fa-bell-o"></i> Notification</a></li>
+                            <li><a href="{% url 'log_out' %}"><i class="fa fa-key"></i> Log Out</a></li>
+                        </ul>
+                    </li>
+                    <!-- user login dropdown end -->
+                </ul>
+                <!--search & user info end-->
+            </div>
+        </header>
+      <!--header end-->
+      <!--sidebar start-->
+      <aside>
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- sidebar menu start-->
+              <ul class="sidebar-menu" id="nav-accordion">
+                  <li class="sub-menu">
+                      <a class="active" href="{% url 'index' %}">
+                          <i class="fa fa-dashboard"></i>
+                          <span>Dashboards</span>
+                      </a>
+                      <ul class="sub">
+
+                        {% for dash in dashboards %}
+                            {% if dash.active == True %}
+                              <li class="sub-menu active">
+                            {% else %}
+                              <li class="sub-menu">
+                            {% endif %}
+                                <a class="dashboard-item" id="{{dash.uid}}" href="/?dashboard={{dash.uid}}">
+                                  {{dash.name}}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                      </ul>
+                  </li>
+
+                  <!-- <li>
+                      <a href="{% url 'gis_view' %}" >
+                          <i class="fa fa-map-marker"></i>
+                          <span>GIS | Maps </span>
+                      </a>
+                  </li> -->
+                
+
+                  <!--Stations menu start-->
+                <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-bullseye"></i>
+                          <span>Stations</span>
+                      </a>
+                      {% for station in fc_stations %}
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html">{{station.name}} [{{station.station}}]</a>
+                            </li>
+                        </ul>
+                      {% endfor %}
+                      {% for station in dg_stations %}
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html">{{station.name}} [{{station.station}}]</a>
+                            </li>
+                        </ul>
+                      {% endfor %}
+                </li>
+                  <!--Stations menu end-->
+                 
+
+                  <!--Sensors menu start-->
+                  <!-- <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-weibo"></i>
+                          <span>Sensors</span>
+                      </a>
+
+                    {% for station in fc_stations %}
+                        <ul class="sub">
+                          <li class="sub-menu">
+                              <a  href="boxed_page.html">{{station.name}}</a>
+                              <ul class="sub">
+                                {% for k, v in station.sensors.iteritems %}   
+                                  <li><a  href="javascript:;" data-value="{{k}}">{{v}}</a></li>
+                                {% endfor %}   
+                              </ul>
+                          </li>
+                      </ul>
+                    {% endfor %}
+                    {% for station in dg_stations %}
+                        <ul class="sub">
+                          <li class="sub-menu">
+                              <a  href="boxed_page.html">{{station.name}}</a>
+                              <ul class="sub">
+                                {% for k, v in station.sensors.iteritems %}   
+                                  <li><a  href="javascript:;" data-value="{{k}}">{{v}}</a></li>
+                                {% endfor %}   
+                              </ul>
+                          </li>
+                      </ul>
+                    {% endfor %}
+                    
+                  </li> -->
+                  <!--sensors menu end-->
+                  <!-- <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-pagelines"></i>
+                          <span>Farms</span>
+                      </a>
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html"></a>
+                            </li>
+                        </ul>
+                </li> -->
+              </ul>
+              <!-- sidebar menu end-->
+          </div>
+      </aside>
+      <!--sidebar end-->
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!--state overview start-->
+              <div class="row state-overview stat-row">
+                  
+                  <!-- {% for widget in stat_widgets %}
+                    <div class="col-lg-3 col-sm-6">
+                      <section id="{{widget.widget_id}}" class="panel">
+                          <div class="symbol blue">
+                              <a data-toggle="modal" class="btn" href="#statmodal"><i>{{widget.widget.data.calc.params.station_name}} </i></a>
+                          </div>
+                          <div class="value">
+                              <h1 class=" count4">
+                                  {{widget.widget.data.calc.value}}
+                              </h1>
+                              <p>{{widget.widget.data.calc.params.sensor_name}}</p>
+                          </div>
+                      </section>
+                    </div>
+                  {% endfor %} -->
+                  {% for widget in stat_widgets %}
+                    {% if widget.dataset.all|length > 2 %}
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 stat-widget" id="{{widget.widget_id}}">
+                    {% else %}
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 stat-widget" id="{{widget.widget_id}}">
+                    {% endif %}
+                      <section class="panel">
+                        <div class="weather-bg" style="background: #{{widget.widget.color}};">
+                            <div class="panel-body">
+                              <span class="title">{{widget.widget.title}}</span>
+                                <span class="actions pull-right">
+                                  <!-- <a href="javascript:;" class="daterange fa fa-calendar"></a> -->
+                                  <!-- <a href="javascript:;" class="fa fa-expand expandable"></a> -->
+                                  <a href="#add-stat-data-modal" data-toggle="modal" operation="ADD_NEW" id="{{widget.widget_id}}" class="fa fa-plus"></a>
+                                  <a href="#add-stat-widget-modal" data-toggle="modal" operation="MODIFY" class="fa fa-wrench"></a>
+                                  <a href="javascript:;" class="fa fa-times"></a>
+                              </span>
+                            </div>
+                        </div>
+
+                        <footer class="weather-category">
+                            <ul>
+                              {% for data in widget.dataset.all %}
+                                <li id="{{data.id}}">
+                                {% if data.stale %}
+                                  <a href="#add-stat-data-modal" class="stale" data-toggle="modal" operation="MODIFY">
+                                {% else %}
+                                  <a href="#add-stat-data-modal" data-toggle="modal" operation="MODIFY">
+                                {% endif %}
+                                    <h5>{{data.name}}</h5>
+                                    {{data.value}} {{data.unit}}
+                                    <span class="datetime">{{data.date_to}}</span>
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                        </footer>
+                      </section>  
+                    </div>
+                  {% endfor %}
+                  
+              </div>
+              
+              
+              <!--state overview end-->
+
+              <!--state overview modals-->
+
+
+              <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="statmodal" class="modal fade">
+                <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                              <h4 class="modal-title">Select Stat Dataset</h4>
+                          </div>
+                          <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label col-lg-2" for="inputSuccess">Sensor | Stat Data</label>
+                                    <div class="col-lg-10">
+                                        <select class="form-control station input-sm m-bot15" data-placeholder="Choose a sensor...">
+                                          <option></option>
+                                            {% for station in fc_stations %}
+                                              <optgroup label="{{station.name}} [{{station.station}}]">
+                                                {% for k, v in station.sensors.iteritems %}
+                                                  <option db="{{station.database}}" station="{{station.station}}" value="{{k}}">{{v}}</option>
+                                                {% endfor %}
+                                              </optgroup>
+                                            {% endfor %}
+                                            {% for station in dg_stations %}
+                                              <optgroup label="{{station.name}} [{{station.station}}]">
+                                                {% for k, v in station.sensors.iteritems %}
+                                                  <option db="{{station.database}}" station="{{station.station}}" value="{{k}}">{{v}}</option>
+                                                {% endfor %}
+                                              </optgroup>
+                                            {% endfor %}
+                                              
+                                        </select>
+                                        </div>
+                                        <br>
+                                        <div class="col-lg-10">
+                                        <select class="form-control sensor input-sm m-bot15" data-placeholder="Choose data...">
+                                            <option></option>
+                                            <option value="temp_min">Min Temperature</option>
+                                            <option value="temp_max">Max Temperature</option>
+                                            <option value="temp_avg">Avg Temperature</option>
+                                            <option value="chilling_hours_acc">Chilling Hours Accu.</option>
+                                            <option value="degree_days_acc">Degree Days Accu.</option>
+                                            <option value="chilling_portions">Chilling Portions</option>
+                                            <option value="rain_accumulation">Accumulated Rain</option>
+                                            <option value="rain_accumulation_24h">Accumulated Rain (24h)</option>
+                                        </select>
+                                      </div>
+                                </div>
+
+                          </div>
+                          <br>
+                          <br>
+                          <div class="modal-footer">
+                              <button class="btn btn-danger remove" type="button">Remove</button>
+                              <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                              <button class="btn btn-success submit" type="button">Submit</button>
+                          </div>
+                    </div>
+                </div>
+             </div>
+
+
+              <!--state overview modals end-->
+
+
+              <div class="row chart-row">
+                
+                  {% for widget in chart_widgets %}
+                    {% if widget.expand %}
+                    <div class="col-lg-12">
+                    {% else %}
+                    <div class="col-lg-6">
+                    {% endif %}
+                      <section id="main-panel-{{forloop.counter}}" class="panel main-panel">
+                          <header class="panel-heading">
+                              <span class="title">{{widget.widget.title}}</span>&nbsp; <i class="fa-spin"></i>
+                              <span class="tools pull-right">
+                                <a href="javascript:;" class="daterange fa fa-calendar"></a>
+                                {% if widget.expand %}
+                                <a href="javascript:;" class="fa fa-compress expandable"></a>
+                                {% else %}
+                                <a href="javascript:;" class="fa fa-expand expandable"></a>
+                                {% endif %}
+                                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                                {% if app_user.access_chart_settings %}
+                                  <a href="#main-chart-modal" data-toggle="modal" class="fa fa-wrench"></a>
+                                  <a href="javascript:;" class="fa fa-times"></a>
+                                {% endif %}
+                                
+                            </span>
+                          </header>
+                          <div class="panel-body">
+                              <div id="{{widget.widget_id}}" class="chart-container">
+                              <div class="nosupport curtain"><i class="fa fa-spin fa-spinner"></i> Loading... </div>
+                              
+                              </div>
+                          </div>
+                      </section>
+                      
+                    </div>
+                  {% endfor %}
+                  {% for widget in map_widgets %}
+                    {% if widget.expand %}
+                    <div class="col-lg-12">
+                    {% else %}
+                    <div class="col-lg-6">
+                    {% endif %}
+                      <section id="main-panel-" class="panel main-panel">
+                        <header class="panel-heading">
+                          <span class="title">{{widget.name}} &nbsp;<i id="map-widget-progress" class=""></i></span>
+                          <span class="tools pull-right">
+                          {% if widget.expand %}
+                            <a href="javascript:;" class="fa fa-compress expandable gis"></a>
+                          {% else %}
+                            <a href="javascript:;" class="fa fa-expand expandable gis"></a>
+                          {% endif %}
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                            <a href="#GISModal" data-toggle="modal" class="fa fa-wrench"></a>
+                            <a href="javascript:;" class="fa fa-times" id="map-widget-delete-button"></a>
+                          </span>
+                        </header>
+                        {% if widget.expand %}
+                          <div class="panel-body gis-panel fullscreen extended-map" id="gis-panel-{{widget.wid}}">
+                        {% else %}
+                          <div class="panel-body gis-panel fullscreen" id="gis-panel-{{widget.wid}}">
+                        {% endif %}
+                        
+                          <div id="{{widget.wid}}" class="gis-container chart-container">
+                            <div class="nosupport"><i class="fa fa-spin fa-spinner"></i> Loading... </div>
+                          </div>
+                          <div id="pieChart-{{widget.wid}}" class="map-pie-chart"></div>
+                          <div id="map-popup-container" style="display: hidden;">
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  {% endfor %}
+
+              </div>
+              <!-- gis widget modal -->
+              <div class="modal fade" id="GISModal" tabindex="-1" role="dialog" aria-labelledby="GISModalLabel">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="GISModalLabel">GIS Widget Settings</h4>
+                    </div>
+                    <div class="modal-body">
+                      <section class="panel">
+                        <header class="panel-heading tab-bg-dark-navy-blue">
+                          <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                          <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+                          <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Files</a></li>
+                          <li role="presentation"><a href="#features" aria-controls="features" role="tab" data-toggle="tab">Features</a></li>
+                          <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab">Options</a></li>
+                        </ul>
+                        <!-- /nav tabs -->
+                        </header>
+                        <div class="panel-body">
+                          <!-- Tab panes -->
+                        <div class="tab-content">
+                          <div role="tabpanel" class="tab-pane active" id="general">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group row">
+                                  <div class="row">
+                                    <div class="col-lg-1"></div>
+                                    <label for="inputTitle" class="col-lg-2 col-sm-2 control-label">Title</label>
+                                      <div class="col-lg-8">
+                                          <input type="text" class="form-control" id="map-widget-title" placeholder="title">
+                                      </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-lg-1"></div>
+                                    <label for="inputIndex" class="top-buffer-5 col-lg-2 col-sm-2 control-label">Index</label>
+                                    <div class="col-lg-4 top-buffer-5">
+                                        <input type="text" class="form-control" id="map-index" placeholder="0">
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-lg-1"></div>
+                                    <label for="inputIndex" class="top-buffer-5 col-lg-2 col-sm-2 control-label">Zoom</label>
+                                    <div class="col-lg-4 top-buffer-5">
+                                        <input type="text" class="form-control" id="map-zoom" placeholder="">
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-lg-1"></div>
+                                    <label for="inputIndex" class="top-buffer-5 col-lg-2 col-sm-2 control-label">Center</label>
+                                    <div class="col-lg-2 top-buffer-5">
+                                        <input type="text" class="form-control" id="map-center-lat" placeholder="lat">
+                                    </div>
+                                    <div class="col-lg-2 top-buffer-5">
+                                        <input type="text" class="form-control" id="map-center-long" placeholder="long">
+                                    </div>
+                                  </div>
+                                </div>
+                            </form>
+                          </div>
+                          <div role="tabpanel" class="tab-pane" id="files">
+                            <div class="form-group">
+                              <div class="row">
+                              <div class="col-lg-1"></div>
+                                <div class="file-table col-lg-9">
+                                  <select multiple class="form-control file-select" id="file-select">
+                                                      
+                                  </select>
+                                </div>  
+                              </div>
+                              <div class="row"> <!-- buttons row -->
+                                <div class="col-lg-1"></div>
+                                <div class="files-btn-container col-lg-9 top-buffer-5">
+                                  <button type="button" class="btn btn-sm btn-danger" id="btn-delete-file">
+                                    <i class="fa fa-trash-o"></i> Delete
+                                  </button>
+                                  <button type="button" class="btn btn-sm btn-default" id="btn-download-file">
+                                    <i class="fa fa-download"></i> Download
+                                  </button>
+                                  <button type="button" class="btn btn-sm btn-primary" id="btn-import-features">
+                                    <i class="fa fa-map-marker"></i> Import Features
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="upload-container ">
+                                  <div class="col-lg-1"></div>
+                                  <div class="k-content col-lg-9 top-buffer-15">
+                                      <input name="fileUpload" id="fileUpload" type="file" autocomplete="off" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                              
+                          </div>
+                          <div role="tabpanel" class="tab-pane" id="features">
+                            <div class="form-group">
+                              <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-2 top-buffer">
+                                  <label class="control-label" for="map-feature-select">Features</label>
+                                </div>
+                                <div class="col-sm-7 top-buffer">
+                                  <select id="map-feature-select">
+                                    
+                                  </select>
+                                </div>  
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-2 top-buffer">
+                                  <label class="control-label" for="map-paw-select">PAW widget</label>
+                                </div>
+                                <div class="col-sm-7 top-buffer">
+                                  <select id="map-paw-select">
+
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-2 top-buffer">
+                                  <label class="control-label" for="map-stat-select">Stat widget</label>
+                                </div>
+                                <div class="col-sm-7 top-buffer">
+                                  <select id="map-stat-select">
+
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div role="tabpanel" class="tab-pane" id="options">
+                            <div class="form-group">
+                              <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-2 top-buffer">
+                                  <label class="control-label" for="map-tile-source-select">Map tiles source</label>
+                                </div>
+                                <div class="col-sm-7 top-buffer">
+                                  <select id="map-tile-source-select">
+                                    {% for source in tile_sources%}
+                                      <option value="{{source.name}}">{{source.name}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>  
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- / tab panes -->
+                        </div>
+                      </section>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary " id="save-map-changes">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /gis widget modal -->
+              <!--main chart modal -->  
+              <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="main-chart-modal" class="modal fade">
+                <div class="modal-dialog ">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                              <h4 class="modal-title">Chart settings</h4>
+                          </div>
+                          <div class="modal-body">
+                                <section class="panel">
+                                      <header class="panel-heading tab-bg-dark-navy-blue ">
+                                          <ul class="nav nav-tabs">
+                                              <li class="active">
+                                                  <a data-toggle="tab" href="#main-general">General</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#about">Datasets</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#pref">Prefrences</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#contact">Options</a>
+                                              </li>
+                                          </ul>
+                                      </header>
+                                      <div class="panel-body">
+                                          <div class="tab-content">
+                                              <div id="main-general" class="tab-pane active">
+                                                  <section class="panel">
+                                                      <div class="panel-body">
+                                                          <form class="form-horizontal" role="form">
+                                                              <div class="form-group row">
+                                                                  <label for="inputTitle" class="col-lg-2 col-sm-2 control-label">Title</label>
+                                                                  <div class="col-lg-10">
+                                                                      <input type="text" class="form-control" id="inputTitle" placeholder="title">
+                                                                  </div>
+                                                                  <label for="inputIndex" class="top-buffer-5 col-lg-2 col-sm-2 control-label">Index</label>
+                                                                  <div class="col-lg-4 top-buffer-5">
+                                                                      <input type="text" class="form-control" id="inputIndex" placeholder="0">
+                                                                  </div>
+                                                                  <div class="col-lg-4"></div>
+                                                              </div>
+                                                          </form>
+                                                      </div>
+                                                  </section>
+                                              </div>
+                                              <div id="about" class="tab-pane">
+                                                 <section class="panel">
+                                                      <header class="panel-heading tab-bg-dark-navy-blue ">
+                                                          <ul class="nav nav-tabs">
+                                                            <li class="">
+                                                                  <a data-toggle="tab" href="#sensors">Sensors</a>
+                                                              </li>
+                                                              <li class="active">
+                                                                  <a data-toggle="tab" href="#paw">PAW</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#chilling">Chilling Portions</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#degree-days">Degree Days</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#c-hours">Chilling Hours</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#eto">ETO</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#dew-point">Dew Point</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#ex-ec">Saturation ex EC</a>
+                                                              </li>
+                                                              <li class="">
+                                                                  <a data-toggle="tab" href="#voltage">Custom Sensor</a>
+                                                              </li>
+                                                          </ul>
+                                                      </header>
+                                                      <div class="panel-body">
+                                                          <div class="tab-content">
+                                                              <div id="sensors" class="tab-pane">
+                                                                  <div class="form-group">
+                                                                    <div class="col-md-12">
+                                                                      <label class="control-label"><input name="sample-checkbox-01" id="checkbox-main-sensors" value="1" type="checkbox" checked /> Raw Sensor Values</label>
+                                                                    </div>
+                                                                    <div class="col-sm-2 top-buffer">
+                                                                      <label class="control-label" for="ms-main-sensors">Sensor(s)</label>  
+                                                                    </div>
+                                                                      
+                                                                      <div class="col-sm-10 top-buffer">
+                                                                          <select multiple="multiple" class="multi-select" id="ms-main-sensors" name="">
+  
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                      </div>
+                                                                      <div class="col-lg-12">
+                                                                        <p class="help-block">Note: Each selected sensor will be shown in a separate graph.</p>
+                                                                      </div>
+                                                                      <div id="ms-main-sensors-label-ctn">
+                                                                        
+                                                                      </div>
+                                                                      <div class="col-sm-4 top-buffer">
+                                                                        <label class="control-label"><input name="sample-checkbox-01" id="checkbox-main-sensors-axis" value="1" type="checkbox" checked /> Fixed axis</label>
+                                                                      </div>
+                                                                      <div class="col-sm-4 top-buffer">
+                                                                        <input type="text" class="form-control input-sm" id="main-sensors-axis-min" placeholder="min">
+                                                                      </div>
+                                                                      <div class="col-sm-4 top-buffer">
+                                                                        <input type="text" class="form-control input-sm" id="main-sensors-axis-max" placeholder="max">
+                                                                      </div>
+                                                                 </div>
+
+                                                              </div>
+                                                              <div id="paw" class="tab-pane active">
+                                                                  <div class="form-group">
+                                                                    <div class="col-md-12">
+                                                                      <label class="control-label"><input name="sample-checkbox-01" id="checkbox-main-paw" value="1" type="checkbox" /> PAW</label>
+                                                                    </div>
+                                                                    <div class="col-sm-2 top-buffer">
+                                                                      <label class="control-label" for="ms-main-paw">Sensor(s)</label>
+                                                                    </div>
+                                                                    <div class="col-sm-10 top-buffer">
+                                                                        <select multiple="multiple" class="multi-select" id="ms-main-paw" name="ms-main-paw[]">
+                                                                            <optgroup label="Field Climate">
+                                                                                  {% for station in fc_stations %}
+                                                                                      <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                          {% for k, v in station.sensors.iteritems %}  
+                                                                                              <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                          {% endfor %}
+                                                                                      </optgroup>
+                                                                                  {% endfor %}
+                                                                              </optgroup>
+                                                                              <optgroup label="Decagon">
+                                                                                  {% for station in dg_stations %}
+                                                                                      <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                          {% for k, v in station.sensors.iteritems %}   
+                                                                                              <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                          {% endfor %}
+                                                                                      </optgroup>
+                                                                                  {% endfor %}   
+                                                                              </optgroup>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-sm-4 top-buffer">
+                                                                      <label  class="control-label"><input name="" id="checkbox-paw-axis" value="1" type="checkbox"/> Fixed axis</label>  
+                                                                    </div>
+                                                                    <div class="col-sm-4 top-buffer">
+                                                                      <input type="text" class="form-control input-sm" id="paw-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-sm-4 top-buffer">
+                                                                      <input type="text" class="form-control input-sm" id="paw-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                    <div class="col-sm-12 m-bot15">
+                                                                      <label class="control-label"><input name="sample-checkbox-01" id="checkbox-main-paw-avg" value="1" type="checkbox"> Average</label>    
+                                                                    </div>
+                                                                   
+                                                                   <div class="attribs form-group"></div>
+                                                                 </div>
+                                                                       
+                                                              </div>
+                                                              <div id="chilling" class="tab-pane">
+                                                                <div class="form-group">
+                                                                      <label class="control-label col-md-3"><input name="sample-checkbox-01" id="checkbox-main-cp" value="1" type="checkbox" /> Chilling portions</label>
+                                                                      <div class="col-md-9">
+                                                                          <select multiple="multiple" class="multi-select station" id="s-main-cp">
+                                                                          <!-- <select multiple="multiple" class="multi-select" id="ms-main-sensors" name=""> -->
+                                                                                <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}  
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+
+                                                                            </select>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div class="form-group">
+                                                                    <label  class="control-label col-md-3 col-lg-3"><input name="" id="checkbox-cp-axis" value="1" type="checkbox"/> Fixed axis</label>
+                                                                     <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                           <input type="text" class="form-control input-sm" id="cp-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                      <input type="text" class="form-control input-sm" id="cp-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                   
+                                                                 </div>
+
+                                                              </div>
+                                                              <div id="degree-days" class="tab-pane">
+                                                                  <div class="form-group">
+                                                                      <label class="control-label col-md-3"><input name="sample-checkbox-01" id="checkbox-main-dd" value="1" type="checkbox" /> Degree Days</label>
+                                                                      <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-dd" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                            
+                                                                      </div>
+                                                                      <label for="main-dd-th" class="col-lg-3 col-sm-2 control-label">Threshold </label>
+                                                                        <div class="col-lg-9">
+                                                                            <input type="text" class="form-control input-sm" id="main-dd-th" placeholder="Base Temp">
+                                                                               <p class="help-block">When left empty will default to 10 C</p>
+                                                                        </div>
+                                                                 </div>
+                                                                 <div class="form-group">
+                                                                    <label  class="control-label col-md-3 col-lg-3"><input name="" id="checkbox-dd-axis" value="1" type="checkbox"/> Fixed axis</label>
+                                                                     <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                           <input type="text" class="form-control input-sm" id="dd-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                      <input type="text" class="form-control input-sm" id="dd-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                   
+                                                                 </div>
+                                                              </div>
+                                                              <div id="c-hours" class="tab-pane">
+                                                                  <div class="form-group">
+                                                                      <label class="control-label col-md-3"><input name="sample-checkbox-01" id="checkbox-main-ch" value="1" type="checkbox" /> Chilling Hours</label>
+                                                                      <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-ch" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                          
+                                                                      </div>
+                                                                      <label for="main-ch-th" class="col-lg-3 col-sm-2 control-label">Threshold </label>
+                                                                        <div class="col-lg-9">
+                                                                            <input type="text" class="form-control input-sm" id="main-ch-th" placeholder="Base Temp">
+                                                                               <p class="help-block">When left empty will default to 7 C</p>
+                                                                        </div>
+                                                                 </div>
+                                                                 <div class="form-group">
+                                                                    <label  class="control-label col-md-3 col-lg-3"><input name="" id="checkbox-ch-axis" value="1" type="checkbox"/> Fixed axis</label>
+                                                                     <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                           <input type="text" class="form-control input-sm" id="ch-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                      <input type="text" class="form-control input-sm" id="ch-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                   
+                                                                 </div>
+                                                              </div>
+                                                              <div id="eto" class="tab-pane">
+                                                                  <div class="form-group">
+                                                                      <label class="control-label col-md-3"><input name="sample-checkbox-01" id="checkbox-main-eto" value="1" type="checkbox" /> ETO | Temp</label>
+                                                                      <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-eto-t" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                          </div>
+                                                                          <label class="control-label col-md-3" for="s-main-eto-rh"> Relative H</label>
+                                                                          <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-eto-rh" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                      </div>
+                                                                      <label class="control-label col-md-3" for="s-main-eto-sr"> Solar Radiation</label>
+                                                                          <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-eto-sr" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                      </div>
+                                                                      <label class="control-label col-md-3" for="s-main-eto-ws"> Wind Speed</label>
+                                                                          <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-eto-ws" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div class="form-group m-bot15">
+                                                                      <label for="main-eto-lat" class="col-lg-2 col-sm-2 control-label">Latitude</label>
+                                                                      <div class="col-lg-4">
+                                                                            <input type="text" class="form-control input-sm" id="main-eto-lat" placeholder="latitude">
+                                                                              <!-- <p class="help-block">Chart widget's title</p> -->
+                                                                      </div>
+                                                                      </div>
+                                                                      <div class="form-group">
+                                                                      <label for="main-eto-alt" class="col-lg-2 col-sm-2 control-label">Altitude</label>
+                                                                      <div class="col-lg-4">
+                                                                            <input type="text" class="form-control input-sm" id="main-eto-alt" placeholder="altitude">
+                                                                              <!-- <p class="help-block">Chart widget's title</p> -->
+                                                                      </div>
+                                                                      </div>
+
+                                                                      <div class="form-group">
+                                                                    <label  class="control-label col-md-3 col-lg-3"><input name="" id="checkbox-eto-axis" value="1" type="checkbox"/> Fixed axis</label>
+                                                                     <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                           <input type="text" class="form-control input-sm" id="eto-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                      <input type="text" class="form-control input-sm" id="eto-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                   
+                                                                 </div>
+                                                              </div>
+                                                              <div id="dew-point" class="tab-pane">
+                                                                  <div class="form-group">
+                                                                      <label class="control-label col-md-3"><input name="sample-checkbox-01" id="checkbox-main-dp" value="1" type="checkbox" /> Dew Point | Temp</label>
+                                                                      <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-dp-t" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                          </div>
+                                                                          <label class="control-label col-md-3" for="s-main-dp"> Relative H</label>
+                                                                          <div class="col-md-9">
+                                                                          <select class="form-control input-sm m-bot15" id="s-main-dp-rh" >
+                                                                              <optgroup label="Field Climate">
+                                                                                    {% for station in fc_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}
+                                                                                </optgroup>
+                                                                                <optgroup label="Decagon">
+                                                                                    {% for station in dg_stations %}
+                                                                                        <optgroup label="{{station.name}} [{{station.station}}]">
+                                                                                            {% for k, v in station.sensors.iteritems %}   
+                                                                                                <option value="{{station.database}}-{{station.station}}-{{k}}">{{v}}</option>
+                                                                                            {% endfor %}
+                                                                                        </optgroup>
+                                                                                    {% endfor %}   
+                                                                                </optgroup>
+                                                                          </select>
+                                                                          </div>
+                                                                      </div>
+                                                                      <div class="form-group">
+                                                                    <label  class="control-label col-md-3 col-lg-3"><input name="" id="checkbox-dp-axis" value="1" type="checkbox"/> Fixed axis</label>
+                                                                     <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                           <input type="text" class="form-control input-sm" id="dp-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-3 col-md-3">
+                                                                      <input type="text" class="form-control input-sm" id="dp-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                   
+                                                                 </div>
+                                                                 </div>
+                                                                 <!-- Sat ex ec -->
+                                                                 <div id="ex-ec" class="tab-pane">
+                                                                   <div class="form-group row">
+                                                                    <div class="col-md-12">
+                                                                      <label class="control-label"><input name="sample-checkbox-01" id="checkbox-ex-ec" value="1" type="checkbox" /> Sat ex EC </label>
+                                                                    </div>
+                                                                        
+                                                                        <div id="ex-ec-ctn" class="">
+                                                                          
+                                                                        </div>
+                                                                        
+
+                                                                        <div id="btn-ex-ec-ctn" class="col-md-12" align="left">
+                                                                          <button id="btn-ex-ec" class="btn btn-link btn-xs"><span class="fa fa-plus"></span> add graph</button>
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-12 col-sm-12 top-buffer">
+                                                                        <label  class="control-label"><input name="" id="checkbox-ex-ec-avg" value="1" type="checkbox"/> Average</label>    
+                                                                      </div>
+                                                                        <div class="col-md-2 col-lg-2 col-sm-2 top-buffer">
+                                                                        <label  class="control-label"><input name="" id="checkbox-ex-ec-axis" value="1" type="checkbox"/> Fixed axis</label>    
+                                                                      </div>
+                                                                     <div class="col-lg-5 col-sm-5 col-md-5 top-buffer">
+                                                                           <input type="text" class="form-control input-sm" id="ex-ec-axis-min" placeholder="min"/>
+                                                                    </div>
+                                                                    <div class="col-lg-5 col-sm-5 col-md-5 top-buffer">
+                                                                      <input type="text" class="form-control input-sm" id="ex-ec-axis-max" placeholder="max"/>
+                                                                    </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <!-- Voltage -->
+                                                              <div id="voltage" class="tab-pane">
+                                                                <div class="form-group row">
+                                                                  <div class="col-md-12">
+                                                                    <label class="control-label"><input name="sample-checkbox-01" id="checkbox-voltage" value="1" type="checkbox" /> Custom Sensor </label>
+                                                                  </div> 
+                                                                  <div id="voltage-ctn" class="">
+                                                                    <!-- voltage calc dynamic elements -->
+                                                                  </div>
+                                                                  <div id="btn-voltage-ctn" class="col-md-12" align="left">
+                                                                    <button id="btn-voltage" class="btn btn-link btn-xs"><span class="fa fa-plus"></span> add graph</button>
+                                                                  </div>
+                                                                  <!-- <div class="col-md-12 col-lg-12 col-sm-12 top-buffer">
+                                                                  <label  class="control-label"><input name="" id="checkbox-voltage-avg" value="1" type="checkbox"/> Average</label>    
+                                                                  </div> -->
+                                                                  <div class="col-md-2 col-lg-2 col-sm-2 top-buffer">
+                                                                  <label  class="control-label"><input name="" id="checkbox-voltage-axis" value="1" type="checkbox"/> Fixed axis</label>    
+                                                                  </div>
+                                                                  <div class="col-lg-5 col-sm-5 col-md-5 top-buffer">
+                                                                     <input type="text" class="form-control input-sm" id="voltage-axis-min" placeholder="min"/>
+                                                                  </div>
+                                                                  <div class="col-lg-5 col-sm-5 col-md-5 top-buffer">
+                                                                    <input type="text" class="form-control input-sm" id="voltage-axis-max" placeholder="max"/>
+                                                                  </div>
+                                                                </div>  
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </section>
+                                              </div>
+                                              <div id="pref" class="tab-pane">
+                                                  <p>
+                                                    <span>Select PAW Ranges: </span>
+                                                  </p>
+                                                  <br>
+                                                 <div class="form-group">
+                                                      <label class="control-label col-md-4">Blue Range: </label>
+                                                        <input type="text" class="zone-range-slider span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="[80,100]" id="blue-s" style="width:200px;">   
+                                                 </div>
+                                                 <div class="form-group">
+                                                    <label class="control-label col-md-4">Green Range: </label>
+                                                     <input type="text" class="zone-range-slider span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="[50,80]" id="green-s" style="width:200px;">
+                                                 </div>
+                                                 <div class="form-group">
+                                                    <label class="control-label col-md-4">Yellow Range: </label>
+                                                     <input type="text" class="zone-range-slider span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="[30,50]" id="yellow-s" style="width:200px;">
+                                                 </div>
+                                                 <div class="form-group">
+                                                    <label class="control-label col-md-4">Red Range: </label>
+                                                     <input type="text" class="zone-range-slider span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="[0,30]" id="red-s" style="width:200px;">
+                                                 </div>
+                                              </div>
+                                              <div id="contact" class="tab-pane">
+
+                                                    <div class="form-group">
+                                                  <label class="control-label col-md-4">Date Range</label>
+                                                  <div class="col-md-6">
+                                                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                                        <span></span> <b class="caret"></b>
+                                                    </div>
+                                                  </div>
+                                              </div>
+
+                                              </div>
+                                          </div>
+                                      </div>
+                                </section>
+
+                          </div>
+                          <div class="modal-footer">
+                              <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                              <button class="btn btn-success submit" type="button">Submit</button>
+                          </div>
+                    </div>
+                </div>
+             </div>
+              <!--main chart modal end -->
+              <!--notification modal -->
+              <div aria-hidden="true" role="dialog" tabindex="-1" id="show-event-modal" class="modal fade">
+                        <div class="modal-dialog modal-sm">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                      <h4 class="modal-title">Alert Event</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="row">
+                                      <label class="col-lg-4 control-label show-event-label ">Name: </label>
+                                      <label class="col-lg-8 control-label name"></label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Description: </label>
+                                      <label class="col-lg-8 control-label description"></label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Message: </label>
+                                      <label class="col-lg-8 control-label message"></label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Station: </label>
+                                      <label class="col-lg-8 control-label station"></label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Widget: </label>
+                                      <label class="col-lg-8 control-label widget"></label>
+                                    </div>
+                                     <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Calc: </label>
+                                      <label class="col-lg-8 control-label calc"></label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Sensor: </label>
+                                      <label class="col-lg-8 control-label sensor"> </label>
+                                    </div>
+                                    <div class="row top-buffer-5">
+                                    <label class="col-lg-4 control-label show-event-label">Time: </label>
+                                    <label class="col-lg-8 control-label time"></label>
+                                  </div>
+                                    <div class="row top-buffer-5">
+                                      <label class="col-lg-4 control-label show-event-label">Value: </label>
+                                      <label class="col-lg-8 control-label value"></label>
+                                  </div>
+                                  <div class="row top-buffer-5">
+                                      
+                                  </div>
+                                  
+                                  <div class="modal-footer">
+                                      <button data-dismiss="modal" class="btn btn-default" type="button">Ok</button>
+                                  </div>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+              <!--notification modal end-->
+
+
+          </section>
+      </section>
+      <!--main content end-->
+      <!--footer start-->
+      <footer class="site-footer">
+          <div class="text-center">
+              2016 &copy; AgViewer by Morph2o L.A.
+              <a href="#" class="go-top">
+                  <i class="fa fa-angle-up"></i>
+              </a>
+          </div>
+      </footer>
+      <!--footer end-->
+  </section>
+  	
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="{% static 'visualizer/js/jquery.min.js' %}"></script>
+    <script src="{% static 'visualizer/js/bootstrap.min.js' %}"></script>
+    <script class="include" type="text/javascript" src="{% static 'visualizer/js/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <script src="{% static 'visualizer/js/jquery.scrollTo.min.js' %}"></script>
+    <script src="{% static 'visualizer/js/jquery.nicescroll.js' %}" type="text/javascript"></script>
+    <!-- <script src="{% static 'visualizer/js/jquery.sparkline.js' %}" type="text/javascript"></script> -->
+    <!-- <script src="{% static 'visualizer/assets/jquery-easy-pie-chart/jquery.easy-pie-chart.js' %}"></script> -->
+    <!-- <script src="{% static 'visualizer/js/owl.carousel.js' %}" ></script> -->
+    <!-- <script src="{% static 'visualizer/js/jquery.customSelect.min.js' %}" ></script> -->
+    <script src="{% static 'visualizer/js/respond.min.js' %}" ></script>
+    <!-- <script src="{% static 'visualizer/js/chosen.jquery.js' %}" ></script> -->
+    <!-- <script type="text/javascript" src="{% static 'visualizer/assets/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script> -->
+    <script type="text/javascript" src="{% static 'visualizer/js/moment.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'visualizer/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script> -->
+    
+
+    <!--common script for all pages-->
+    <script src="{% static 'visualizer/js/common-scripts.js' %}"></script>
+
+    <!--amcharts -->
+    <script src="{% static 'visualizer/amcharts/amcharts.js' %}" type="text/javascript"></script>
+    <script src="{% static 'visualizer/amcharts/serial.js' %}" type="text/javascript"></script>
+    <script src="{% static 'visualizer/amcharts/pie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'visualizer/amcharts/themes/light.js' %}"></script>
+    <script src="{% static 'visualizer/amcharts/plugins/export/export.js' %}"></script>
+    <!-- <script src="{% static 'visualizer/amcharts/plugins/responsive/responsive.min.js' %}"></script> -->
+    <!--script for this page-->
+    <!-- <script type="text/javascript" src="{% static 'visualizer/assets/jquery-multi-select/js/jquery.multi-select.js' %}"></script> -->
+    <!-- <script type="text/javascript" src="{% static 'visualizer/assets/jquery-multi-select/js/jquery.quicksearch.js' %}"></script> -->
+    <!-- <script src="{% static 'visualizer/assets/jquery-ui/jquery-ui-1.10.1.custom.min.js' %}" type="text/javascript"></script> -->
+
+    <!-- <script src="{% static 'visualizer/js/sparkline-chart.js' %}"></script> -->
+    <!-- <script src="{% static 'visualizer/js/easy-pie-chart.js' %}"></script> -->
+    <!-- <script src="{% static 'visualizer/js/count.js' %}"></script> -->
+    <script type="text/javascript" src="{% static 'visualizer/js/widgets.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'visualizer/js/charts.js' %}"></script> -->
+    <!-- <script type="text/javascript" src="{% static 'visualizer/js/bootstrap-slider.js' %}"></script> -->
+    <script type="text/javascript" src="{% static 'visualizer/js/daterangepicker.js' %}"></script>
+    <script src="{% static 'visualizer/js/kendo.all.min.js' %}"></script>
+    <!-- <script src="{% static 'visualizer/js/kendo.touch.min.js' %}"></script> -->
+    <!-- <script src="{% static 'visualizer/js/kendo.mobile.min.js' %}"></script> -->
+    <script src="{% static 'visualizer/js/jscolor.min.js' %}"></script>
+    <script src="{% static 'visualizer/js/utils.js' %}"></script>
+    <!-- openlayers 4 -->
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js"></script>
+    <script src="{% static 'visualizer/js/Blob.js' %}"></script>
+    <script src="{% static 'visualizer/js/canvas-toBlob.js' %}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script> -->
+    <script src="{% static 'visualizer/js/FileSaver.js' %}"></script>
+    <script src="{% static 'visualizer/js/gis.js' %}"></script>
+
+    
+
+    <!-- <script src="{% static 'visualizer/js/kendo.multiselect.min.js' %}"></script>  -->
+<!--    <script src="{% static 'visualizer/assets/jquery-ui/jquery-ui-1.10.1.custom.min.js' %}" type="text/javascript"></script> -->
+   <!-- <script type="text/javascript" src="{% static 'visualizer/js/advanced-form-components.js' %}"></script> -->
+    <!--jquery multi select -->
+
+  </body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+ {%load staticfiles%}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="morph2o">
+    <meta name="keyword" content="agviewer, morph2o">
+	<link rel="shortcut icon" href="{% static 'visualizer/img/favicon.png' %}">
+
+    <title>AgViewer 1.0</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'visualizer/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'visualizer/css/bootstrap-reset.css' %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static 'visualizer/assets/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.4/css/ol.css" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'visualizer/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'visualizer/css/style-responsive.css' %}" rel="stylesheet" />
+
+
+    <style>
+      .ol-touch .rotate-north {
+        top: 80px;
+      }
+      .draw{
+        top: 65px;
+        left: .5em;
+      }
+      #upload{
+        top: 96px;
+        left: .5em;
+      }
+      #save{
+        top: 125px;
+        left: .5em;
+      }
+      #fill{
+        top: 156px;
+        left: .5em;
+      }
+      #stroke{
+        top: 185px;
+        left: .5em;
+      }
+      .dropdown-menu:not('colorpicker'){
+      max-height: 100px;
+      overflow-y:scroll; 
+      }
+
+      /* JUST FOR THE NOTIFICATIONS */
+       .growl {
+          position: absolute;
+          right: 15px;
+          top: 15px;
+          z-index: 1337;
+      }
+      .growl .alert {
+          width: 250px;
+          opacity: 0.8;
+          cursor: pointer;
+      }
+    </style>
+
+    <script>
+    var urlListFiles = "{% url 'load_files' %}";
+    var urlDeleteFiles = "{% url 'delete_files' %}";
+    var urlDownloadFile = "{% url 'download_file' %}";
+    var urlGetUrl = "{% url 'get_url' %}";
+    var token = "{% csrf_token %}";
+    </script>
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <div class="growl"></div>
+
+  <section id="container" >
+      <!--header start-->
+      <header class="header white-bg">
+              <div class="sidebar-toggle-box">
+                  <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+              </div>
+            <!--logo start-->
+            <a href="index.html" class="logo">&nbsp;<img src="{% static 'visualizer/img/logo-tiny.png' %}" height="45px"></a>
+            <!--logo end-->
+            <div class="nav notify-row" id="top_menu">
+                <!--  notification start -->
+                <ul class="nav top-menu">
+                    <!-- settings start -->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="fa fa-plus"></i>
+<!--                             <span class="badge bg-success">6</span>
+ -->                        </a>
+                        <ul class="dropdown-menu extended tasks-bar">
+                            <div class="notify-arrow notify-arrow-green"></div>
+                            <li>
+                                <p class="green">Add new widget</p>
+                            </li>
+                            
+                            <li class="external">
+                                <a href="#">Add..</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- settings end -->
+                    <!-- inbox dropdown start-->
+                    <li id="header_inbox_bar" class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <i class="fa fa-envelope-o"></i>
+<!--                             <span class="badge bg-important">5</span>
+ -->                        </a>
+                        <ul class="dropdown-menu extended inbox">
+                            <div class="notify-arrow notify-arrow-red"></div>
+                            <li>
+                                <p class="red">You have 5 new messages</p>
+                            </li>
+                           
+                            <li>
+                                <a href="#">See all messages</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- inbox dropdown end -->
+                    <!-- notification dropdown start-->
+                    <li id="header_notification_bar" class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+
+                            <i class="fa fa-bell-o"></i>
+<!--                             <span class="badge bg-warning">7</span>
+ -->                        </a>
+                        <ul class="dropdown-menu extended notification">
+                            <div class="notify-arrow notify-arrow-yellow"></div>
+                            <li>
+                                <p class="yellow">You have 7 new notifications</p>
+                            </li>
+                            
+                            <li>
+                                <a href="#">See all notifications</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- notification dropdown end -->
+                </ul>
+                <!--  notification end -->
+            </div>
+            <div class="top-nav ">
+                <!--search & user info start-->
+                <ul class="nav pull-right top-menu">
+                    <li>
+                        <input type="text" class="form-control search" placeholder="Search">
+                    </li>
+                    <!-- user login dropdown start-->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <!-- <img alt="" src="img/avatar1_small.jpg"> -->
+                            <span class="username">{{name}}</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu extended logout">
+                            <div class="log-arrow-up"></div>
+                            <li><a href="#"><i class=" fa fa-suitcase"></i>Profile</a></li>
+                            <li><a href="#"><i class="fa fa-cog"></i> Settings</a></li>
+                            <li><a href="#"><i class="fa fa-bell-o"></i> Notification</a></li>
+                            <li><a href="login.html"><i class="fa fa-key"></i> Log Out</a></li>
+                        </ul>
+                    </li>
+                    <!-- user login dropdown end -->
+                </ul>
+                <!--search & user info end-->
+            </div>
+        </header>
+      <!--header end-->
+      <!--sidebar start-->
+      <asi de>
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- sidebar menu start-->
+              <ul class="sidebar-menu" id="nav-accordion">
+                  <li class="sub-menu">
+                      <a class="active" href="{% url 'index' %}">
+                          <i class="fa fa-dashboard"></i>
+                          <span>Dashboards</span>
+                      </a>
+                      <ul class="sub">
+
+                        {% for dash in dashboards %}
+                          <li class="sub-menu">
+                            <a class="dashboard-item" id="{{dash.uid}}" href="/?dashboard={{dash.uid}}">
+                              {{dash.name}}
+                            </a>
+                          </li>
+                        {% endfor %}
+
+                      </ul>
+                  </li>
+
+                  <li>
+                      <a href="{% url 'gis_view' %}" >
+                          <i class="fa fa-map-marker"></i>
+                          <span>GIS | Maps </span>
+                      </a>
+                  </li>
+
+                  <!--Stations menu start-->
+                <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-bullseye"></i>
+                          <span>Stations</span>
+                      </a>
+                      {% for station in fc_stations %}
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html">{{station.name}}</a>
+                            </li>
+                        </ul>
+                      {% endfor %}
+                      {% for station in dg_stations %}
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html">{{station.name}}</a>
+                            </li>
+                        </ul>
+                      {% endfor %}
+                </li>
+                  <!--Stations menu end-->
+                 
+
+                  <!--Sensors menu start-->
+                  <!-- <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-weibo"></i>
+                          <span>Sensors</span>
+                      </a>
+
+                    {% for k, v in station_sensor.iteritems %}
+                        <ul class="sub">
+                          <li class="sub-menu">
+                              <a  href="boxed_page.html">{{k}}</a>
+                              <ul class="sub">
+                                {% for key, val in v.iteritems %}   
+                                  <li><a  href="javascript:;" data-value="{{key}}">{{val}}</a></li>
+                                {% endfor %}   
+                              </ul>
+                          </li>
+                      </ul>
+                    {% endfor %}
+                    
+                  </li>
+ -->                  <!--sensors menu end-->
+                  <!-- <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-pagelines"></i>
+                          <span>Farms</span>
+                      </a>
+                        <ul class="sub">
+                            <li class="sub-menu">
+                                <a  href="boxed_page.html"></a>
+                            </li>
+                        </ul>
+                </li> -->
+              </ul>
+              <!-- sidebar menu end-->
+          </div>
+      </aside>
+      <!--sidebar end-->
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              
+
+              <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="statmodal" class="modal fade">
+                <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                              <h4 class="modal-title">Select Stat Dataset</h4>
+                          </div>
+                          <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label col-lg-2" for="inputSuccess">Station | Stat Data</label>
+                                    <div class="col-lg-10">
+                                        <select class="form-control station input-sm m-bot15">
+                                            {% for k, v in station_sensor.iteritems %}
+                                                <option value="{{k}}" db="fc">{{k}}</option>    
+                                            {% endfor %}
+                                        </select>
+
+                                        <select class="form-control sensor input-sm m-bot15">
+                                            <option value="temp_min">Min Tempreture</option>
+                                            <option value="temp_max">Max Tempreture</option>
+                                            <option value="temp_avg">Average Tempreture</option>
+                                            <option value="chilling_hours_acc">Chilling Hours Accu.</option>
+                                            <option value="degree_days_acc">Degree Days Accu.</option>
+                                        </select>
+                                      </div>
+                                </div>
+
+                          </div>
+                          <br>
+                          <br>
+                          <div class="modal-footer">
+                              <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                              <button class="btn btn-success submit" type="button">Submit</button>
+                          </div>
+                    </div>
+                </div>
+             </div>
+
+
+              <!--state overview modals end-->
+
+
+
+              <div class="row">
+
+
+              </div>
+              <!--main chart modal -->
+
+
+              <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="main-chart-modal" class="modal fade">
+                <div class="modal-dialog ">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                              <h4 class="modal-title">Chart settings</h4>
+                          </div>
+                          <div class="modal-body">
+                                <section class="panel">
+                                      <header class="panel-heading tab-bg-dark-navy-blue ">
+                                          <ul class="nav nav-tabs">
+                                              <li class="active">
+                                                  <a data-toggle="tab" href="#main-general">General</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#about">Files</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#profile">Prefrences</a>
+                                              </li>
+                                              <li class="">
+                                                  <a data-toggle="tab" href="#contact">Options</a>
+                                              </li>
+                                          </ul>
+                                      </header>
+                                      <div class="panel-body">
+                                          <div class="tab-content">
+                                              <div id="main-general" class="tab-pane active">
+                                                  <section class="panel">
+                                                      <!-- <header class="panel-heading">
+                                                          Horizontal Forms
+                                                      </header> -->
+                                                      <div class="panel-body">
+                                                          <form class="form-horizontal" role="form">
+                                                              <div class="form-group">
+                                                                  <label for="inputEmail1" class="col-lg-2 col-sm-2 control-label">Title</label>
+                                                                  <div class="col-lg-6">
+                                                                      <input type="text" class="form-control" id="inputTitle" placeholder="title">
+                                                                      <!-- <p class="help-block">Chart widget's title</p> -->
+                                                                  </div>
+                                                              </div>
+                                                              
+                                                          </form>
+                                                      </div>
+                                                  </section>
+                                              </div>
+                                              <div id="about" class="tab-pane">
+                                                <label>My files: </label>
+                                                <select multiple class="form-control file-select">
+                                                  
+                                                </select>
+                                                <br>
+                                                <button type="button" class="btn btn-danger btn-xs" id='delete-btn'><i class="fa fa-trash-o"></i> Delete </button>
+                                                <button type="button" class="btn btn-info btn-xs" id='download-btn'><i class="fa fa-download"></i> Download</button>
+                                                <button type="button" class="btn btn-primary btn-xs" id='add-btn'><i class="fa fa-map-marker"></i> Add to map</button>
+                                                <br>
+                                                <br>
+                                                <form id="file-upload-form" action="{% url 'file_upload' %}" method="post"  enctype="multipart/form-data">
+                                                  {% csrf_token %}
+                                                  {{form}}
+                                                  <button type="submit" class="btn btn-primary btn-xs" id='upload-btn'><i class="fa fa-upload"></i> Upload </button>
+                                                </form>    
+                                              </div>
+                                              <div id="profile" class="tab-pane">
+
+                                                 
+                                              </div>
+                                              <div id="contact" class="tab-pane">
+
+                                                    <div class="form-group">
+                                                  <label class="control-label col-md-2">Date Range</label>
+                                                  <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">From:</label>
+                                                        <div class="col-md-10">
+                                                            <input id="dt_from" size="16" type="text" value="2016-03-15 14:45" class="form_datetime form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label class="control-label col-md-3">To:</label>
+                                                      <div class="col-md-10">
+                                                          <input id="dt_to" size="16" type="text" value="2016-03-16 14:45" class="form_datetime form-control">
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                              </div>
+
+                                              </div>
+                                          </div>
+                                      </div>
+                                </section>
+
+                          </div>
+                          <div class="modal-footer">
+                              <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                              <button class="btn btn-success submit" type="button">Ok</button>
+                          </div>
+                    </div>
+                </div>
+             </div>
+
+
+
+              <!--main chart modal end -->
+
+              <div class="row">
+                  <div class="col-lg-12">
+                    <section id="main-panel" class="panel main-panel">
+                          <header class="panel-heading">
+                              <span class="title"> <i class="fa fa-map-marker"></i> GIS | Maps &nbsp;<!-- <i class="fa fa-spinner fa-spin"></i> --></span>
+                              <span class="tools pull-right">
+                                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                                <a href="#main-chart-modal" data-toggle="modal" class="fa fa-wrench"></a>
+                                <a href="javascript:;" class="fa fa-times"></a>
+                            </span>
+                          </header>
+                          <div class="panel-body gis">
+                              <div id="map" class="map col-md-12 col-sm-12 col-xs-12"></div>
+                        
+                        <div id="fill" class=" ol-unselectable ol-control">
+                        <button href="#" id="popoverExampleTwo"><li class="fa fa-tint"></button>
+                        </div>
+                        <div id="save" class=" ol-unselectable ol-control">
+                        <button href="#" id="popoverExampleTwo"><li class="fa fa-floppy-o"></button>
+                        </div>
+                        <div id="stroke" class=" ol-unselectable ol-control">
+                          <button id="strk" class=" "><i class="fa fa-floppy-o"></i></button>
+                        </div>
+                        <div id="edit" class="draw dropdown ol-unselectable ol-control">
+                          <button class="dropdown-toggle"  data-toggle="dropdown" title="Draw" aria-haspopup="true" aria-expanded="true"><i class="fa fa-pencil"></i></button>
+                          <ul class="dropdown-menu draw dropdown-menu-left" aria-labelledby="dropdownMenu1">
+                          <li><a href="#" opt-value="Point" >Point</a></li>
+                          <li><a href="#" opt-value="LineString">LineString</a></li>
+                          <li><a href="#" opt-value="Polygon">Polygon</a></li>
+                            <li><a href="#" opt-value="Circle">Circle</a></li>
+                            <li><a href="#" opt-value="Square">Square</a></li>
+                            <li><a href="#" opt-value="Box">Box</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" opt-value="None">None</a></li>
+                        </ul>
+                        </div>
+                        <div id="upload" class="upload dropdown ol-unselectable ol-control">
+                          <button class="dropdown-toggle"  data-toggle="dropdown" title="Upload" aria-haspopup="true" aria-expanded="true"><i class="fa fa-upload"></i></button>
+                          <ul class="dropdown-menu dropdown-menu-left">
+                          <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                        </div>
+                        
+                        
+                        <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-tip jq-dropdown-anchor-right">
+                          <div class="jq-dropdown-panel">
+                            You can put whatever HTML you want in a panel!
+                          </div>
+                        </div>
+                              
+                        <!-- <button href="#" data-jq-dropdown="#jq-dropdown-2"><i class="fa fa-floppy-o"></i></button> -->
+                        <div id="jq-dropdown-2" class="jq-dropdown jq-dropdown-tip jq-dropdown-anchor-right">
+                          <div class="jq-dropdown-panel">
+                            You can put whatever HTML you want in a panel!
+                        </div>
+                        </div>
+
+                      <div id="popoverExampleTwoHiddenContent" style="display: none">
+                            <div id="demo_cont" class="demo demo-auto inl-bl" data-container="#demo_cont"
+                                   data-color="rgba(150,216,62,0.55)" data-inline="true"></div>
+                        </div>
+                        <div id="popoverExampleTwoHiddenTitle" style="display: none">
+                            Fill
+                        </div>
+                          </div>
+                      </section> 
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-lg-12">
+                    
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-lg-8">
+                  </div>
+                  <div class="col-lg-4">
+                      <div class="row">
+                          <div class="col-xs-6">
+                          </div>
+                          <div class="col-xs-6">
+                          </div>
+                      </div>
+                      
+                  </div>
+              </div>
+
+          </section>
+      </section>
+      <!--main content end-->
+      <!--footer start-->
+      <footer class="site-footer">
+          <div class="text-center">
+              2016 &copy; AgViewer by Morph2o L.A.
+              <a href="#" class="go-top">
+                  <i class="fa fa-angle-up"></i>
+              </a>
+          </div>
+      </footer>
+      <!--footer end-->
+  </section>
+
+    <!-- js placed at the end of the document so the pages load faster -->
+
+    <script src="{% static 'visualizer/js/jquery.min.js' %}"></script>
+    <script src="{% static 'visualizer/js/bootstrap.min.js' %}"></script>
+    <script class="include" type="text/javascript" src="{% static 'visualizer/js/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <!--common script for all pages-->
+    <script src="{% static 'visualizer/js/common-scripts.js' %}"></script>>
+    <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
+    <!--script for this page-->
+    <script src="{% static 'visualizer/js/geois.js' %}"></script>
+
+
+  </body>
+</html>

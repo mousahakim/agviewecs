@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css?family=Hind+Madurai');
+
+.gis-panel {
+	padding: 1px;
+	height: 380px;
+}
+.gis-container {
+	width: 100%;
+	height: 100%;
+}
+.ol-control button{
+	background-color: rgba(128, 128, 128, .5);
+}
+.ol-control button:focus {
+	background-color: rgba(0, 0, 0, .5);
+}
+.ol-control button:hover {
+	background-color: rgba(0, 0, 0, .5);
+}
+.ol-scale-line {
+	background-color: rgba(128, 128, 128, .5);
+}
+.ol-overviewmap {
+	bottom: 2em;
+}
+.ol-mouse-position {
+	font-family: monospace;
+}
+.popover-content {
+    min-width: 145px;
+    font-family: 'Hind Madurai', sans-serif;
+}
+.popover-content > p {
+    margin-bottom: 0;
+}
+.popover-title {
+    padding: 4px 10px;
+    font-family: 'Hind Madurai', sans-serif;
+}
+.nosupport {
+    position: absolute;
+    width: calc(100% - 30px);
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+}
+.draw-button1 {
+	top: .5em;
+	right: calc(1.875em + 6px);
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	padding-left: 0px;
+}
+.popover-front {
+    z-index: 1011 !important;
+}
+.map-pie-chart {
+    overflow: hidden;
+    text-align: left;
+    width: 120px;
+    height: 120px;
+    bottom: 10px;
+    left: 10px;
+    position: absolute;
+}
+
+/*full screen */
+.fullscreen:-moz-full-screen {
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+.fullscreen:-webkit-full-screen {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.fullscreen:-ms-fullscreen {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.fullscreen:fullscreen {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.extended-map {
+    height: 500px;
+}
+
+/*custom controls*/
+.tooltip-inner {
+    white-space: nowrap;
+  }
+      
+.draw-polygon {
+    top: calc(.5em + 1.375em + 12px); /*1 button down*/
+    right: .5em;
+}
+
+.draw-polygon img {
+    max-width: 18px;
+    max-height: 20px;
+}
+
+.draw-square {
+    top: calc(.5em + 1.375em*2 + 4px*3 + 12px); /* 2 buttons down */
+    right: .5em;
+}
+
+.draw-square img {
+    max-width: 18px;
+    max-height: 20px;
+}
+
+.draw-circle {
+    top: calc(.5em + 1.375em*3 + 4px*6 + 12px); /* 2 buttons down */
+    right: .5em;
+}
+
+.draw-circle img {
+    max-width: 18px;
+    max-height: 20px;
+}
+
+.clear-drawings {
+    top: calc(.5em + 1.375em*4 + 4px*9 + 12px); /* 3 buttons down */
+    right: .5em;
+}
+
+.clear-drawings img {
+    max-width: 18px;
+    max-height: 20px;
+}
+
+.save-drawings {
+    top: calc(.5em + 1.375em*5 + 4px*12 + 12px); /* 3 buttons down */
+    right: .5em;
+}
+
+.save-drawings img {
+    max-width: 18px;
+    max-height: 20px;
+}
+
+.download-map {
+    top: calc(.5em + 1.375em*6 + 4px*15 + 12px); /* 4 buttons down */
+    right: .5em;
+}
+
+div.k-widget.k-dialog > .k-header {
+    height: 20px!important;
+    padding: 0;
+    background-color: #fff;
+    border-color: rgb(216, 216, 216);
+}
+
+div.k-widget.k-dialog > .k-header > .k-dialog-actions {
+    top:0;
+    right: 0.2em;
+    color: #4c5356;
+}
+
+div.k-widget.k-dialog > .k-dialog-buttongroup button{
+    color: black;
+    background-color: #fff;
+    border-color: rgb(216, 216, 216);
+}
+div.k-widget.k-dialog > .k-dialog-buttongroup button:hover{
+    background-color: #2b3541;
+    /*background-color: #5a6d84;*/
+    color: #fff;
+}
+/*.notification-bar {
+    width: 100%;
+    height: 1.5em;
+    display: table;
+}
+.notification-bar > div {
+    height: 100%;
+    display: table-cell;
+    border: 1px solid grey;
+    width: 34%;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+.notification-bar .message-bar {
+    width: 66%;
+}
+.notification-bar .ol-mouse-position {
+    font-family: monospace;
+    text-align: center;
+    position: static;
+}*/
+/*.toolbar {*/
+    /*height: 2em;*/
+    /*display: table;*/
+    /*padding-left: .2em;*/
+    /*position: absolute;*/
+    /*top: 1px;*/
+/*}*/
+/*.toolbar .ol-control {
+    position: static;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0;
+}
+.toolbar .ol-control button {
+    border-radius: 2px;
+    background-color: rgba(128, 128, 128, .5);
+    width: 2em;
+    display: inline-block;
+}
+.toolbar .ol-control button:hover {
+    background-color: rgba(0, 0, 0, .5);
+}*/

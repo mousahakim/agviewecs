@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+ {%load staticfiles%}
+<html>
+<head>
+	<title>
+		Ajax Test
+	</title>
+   
+<script type="text/javascript" src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+<link rel='stylesheet prefetch' href='http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css'>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js'></script>
+<script type="text/javascript" src="{% static 'visualizer/js/anchor.js' %}"></script>
+
+
+<script type="text/javascript">
+	
+
+$(function() {
+
+
+    // This function gets cookie with a given name
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    /*
+    The functions below will create a header with csrftoken
+    */
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+});
+
+
+
+function send_ajax(callback) {
+	var request = $.ajax({
+		  method: "POST",
+		  url: "http://172.16.68.10:8000/test/",
+		  data: '{ "widget_id": 1, "widget": "babab", "size": 10}', 
+		  dataType: 'json'
+		}).done(function(data) {
+    		callback(data);
+  		}).fail(function(msg){
+  			alert('failed');
+  		});
+	};
+
+function callback(data){
+	alert(data.code);
+}
+
+function get_data () {
+	send_ajax(callback);
+};
+
+
+	$(document).ready(function() {
+	  $("ul.dropdown-menu input[type=checkbox]").each(function() {
+	    $(this).change(function() {
+	      var line = "";
+	      $("ul.dropdown-menu input[type=checkbox]").each(function() {
+	        if ($(this).is(":checked")) {
+	          line += $("+ span", this).attr('data-value');
+	        }
+	      });
+	      alert(val(line));
+	    });
+	  });
+	});
+
+</script>
+
+<style type="text/css">
+	
+	body {
+		padding: 40px;
+	}
+</style>
+
+</head>
+<body>
+	
+	
+	<a id="but" href="#" onclick="get_data()">Send</a>
+	</br>
+
+	<a href="#" onclick="addWidget()">Add widget</a>
+
+<!-- 	<div>
+		
+		{% for k, v in station_sensor.iteritems %}
+			</br>{{k}}: </br>
+			{% for key, val in v.iteritems %}
+				{{key}}: {{val}}
+			{% endfor %}
+
+		{% endfor %}
+</br>
+		{% for k, v in sensor_list.iteritems %}
+			{{k}}, {{v}}
+
+		{% endfor %}
+
+	</div>
+	<div>
+		{{id}}
+	</div> -->
+
+<br/>
+  <div class="input-group">
+  <div class="input-group-btn">
+    <button tabindex="-1" class="btn btn-default" type="button">Select</button>
+    <button tabindex="-1" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
+      <span class="caret"></span>
+    </button>
+    <ul role="menu" class="dropdown-menu">
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl" data-value="1"> Every day</span>
+        </a>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <a href="#">
+          <input type="checkbox">
+          <span class="lbl" data-value="2"> Monday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox" ><span data-value="3" class="lbl">Tuesday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl" data-value="1">
+								Wednesday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl">
+								Thursday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl">
+								Friday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl">
+								Saturday</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl">
+								Sunday</span>
+        </a>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <a href="#">
+          <input type="checkbox"><span class="lbl"> Last Weekday in month</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <input type="text" class="form-control">
+</div>
+
+	
+
+</body>
+
+
+</html>

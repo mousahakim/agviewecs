@@ -1,0 +1,7 @@
+*.pyc
+*~
+*.log
+*.pid
+db.sqlite3
+visualizer/migrations/*
+static/*
