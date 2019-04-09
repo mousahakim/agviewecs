@@ -553,9 +553,17 @@ def convert(value, code):
 
 	elif code == '105' or code == '106':
 		if value is None:
-			return None
+			return {
+				'CDT Dept': None,
+				'CDT Temp': None,
+				'CDT EC': None
+			}
 		if value == 0:
-			return 0
+			return {
+				'CDT Dept': 0,
+				'CDT Temp': 0,
+				'CDT EC': 0
+			}
 		value = int(value)
 
 		dept_raw = value & 8191 #
