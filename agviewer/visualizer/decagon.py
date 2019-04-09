@@ -92,6 +92,31 @@ def convert_sca(value, code, extract, unit=None):
 		else:
 			return dept_raw
 
+	elif code == '105' or code == '106':
+		if value is None:
+			return None
+		if value == 0:
+			return 0
+		value = int(value)
+
+		dept_raw = value & 8191 #
+		t_raw = rshift(value, 23)
+		ec_raw = rshift(value, 13) & 511 #
+
+
+		if extract == 'temp':
+			if t_raw <= 10:
+				return t_raw - 11
+			else:
+				return (t_raw - 20)/10
+		elif extract == 'ec':
+			return 10**(ec_raw/190) / 1000
+
+		else:
+			if dept_raw <= 5099:
+				return dept_raw
+			else:
+				return (dept_raw - 5100) * 2 + 5100
 
 	elif code == '110':
 		if value is None:
