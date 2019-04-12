@@ -103,7 +103,7 @@ def set_widget(widget_dict, user):
 	return widget_dict
 
 def set_stat_widget(widget_data_id):
-
+	from datetime import datetime
 	try:
 		widget_data = Data.objects.get(id=widget_data_id)
 	except Data.DoesNotExist as e:
@@ -2722,7 +2722,7 @@ def list_files(user):
 	return []
 
 def get_data_decagon(device, user, devicepass):
-	from datetime import datetime
+	# from datetime import datetime
 	print 'downloading decagon data...'
 	mrid = 0
 	prev_records = StationData.objects.filter(station_id=device)

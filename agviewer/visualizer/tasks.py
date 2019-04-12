@@ -29,7 +29,7 @@ def async_update():
 def update_stat_widget(widget_id):
 	from visualizer.models import Widgets, StationData
 	from visualizer.get_records import set_stat_widget
-	from datetime import datetime, timedelta
+	# from datetime import datetime, timedelta
 	try:
 		widget = Widgets.objects.get(widget_id=widget_id)
 	except Widgets.DoesNotExist as e:
@@ -734,7 +734,7 @@ def get_rid(dxd):
 def monitor(widget, username):
 	from django.contrib.auth.models import User
 	from visualizer.general import Alert
-	import datetime
+	# import datetime
 	
 	if widget['type'] == 'stat':
 		return
