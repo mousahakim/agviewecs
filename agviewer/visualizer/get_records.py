@@ -2722,7 +2722,7 @@ def list_files(user):
 	return []
 
 def get_data_decagon(device, user, devicepass):
-	from datetime import datetime
+	# from datetime import datetime
 	print 'downloading decagon data...'
 	mrid = 0
 	prev_records = StationData.objects.filter(station_id=device)

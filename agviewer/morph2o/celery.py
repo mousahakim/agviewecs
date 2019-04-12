@@ -16,7 +16,7 @@ django.setup()
 # Using RabbitMQ
 # app = Celery('morph2o', broker='pyamqp://admin:Rah3lajan@10.0.0.151:5672', task_ignore_result=True, task_time_limit=20)
 # Using Redis
-app = Celery('morph2o', broker='redis://10.0.0.100:6379/0', task_ignore_result=True, task_time_limit=60)
+app = Celery('morph2o', broker='redis://10.0.0.100:6379/0', task_ignore_result=True)
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
