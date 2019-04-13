@@ -2,6 +2,7 @@ import boto3, redis, time
 from datetime import datetime
 from django.core.management.base import BaseCommand
 from visualizer.tasks import async_download, async_update
+from celery import Celery
 
 
 class Command(BaseCommand):
@@ -19,7 +20,22 @@ class Command(BaseCommand):
 
 	SERVICE_NAME = 'agview1_service'
 
+	CELERY_APP = Celery('morph2o', broker='redis://10.0.0.100:6379/0', task_ignore_result=True)
+
 	client = boto3.client('ecs')
+
+
+	def get_active_celery_worker_count(self):
+
+		workers = self.CELERY_APP.control.inspect().active()
+
+		count = 0
+
+		for k, v in workers.items():
+
+			count += len(v)
+
+		return count
 
 
 	def get_redis_queue_lenght(self, host='localhost', port=6379, db=0, queue='celery'):
@@ -62,12 +78,20 @@ class Command(BaseCommand):
 
 	def stop_tasks(self):
 
+		#wait for queue size to become 0
 		while self.get_redis_queue_lenght() > 0:
 
 			self.stdout.write('Queue Lenght is {}'.format(self.get_redis_queue_lenght()))
 			time.sleep(5)
 
+		#waiting for active tasks to finish
+		while self.get_active_celery_worker_count() > 0:
+			self.stdout.write('Waiting for active tasks to finish')
+			self.stdout.write('{} tasks are active'.format(self.get_active_celery_worker_count()))
+			time.sleep(5)
+
 		#update desired count to 0
+		self.stdout.write('All tasks finished. Setting desired count to 0')
 		service_update_response = self.client.update_service(cluster=self.CLUSTER, desiredCount=0,\
 			networkConfiguration=self.NET_CONFIG, service=self.SERVICE_NAME)
 		
