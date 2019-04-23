@@ -29,6 +29,9 @@ class Command(BaseCommand):
 
 		workers = self.CELERY_APP.control.inspect().active()
 
+		if not workers:
+			return 0
+
 		count = 0
 
 		for k, v in workers.items():
@@ -75,6 +78,80 @@ class Command(BaseCommand):
 
 		return True
 
+	def stop_idle_tasks(self):
+
+		workers = self.CELERY_APP.control.inspect().active()
+
+		#return if there's no connected celery worker
+		if not workers:
+			print 'no active workers'
+			return
+
+		idle_worker_ips = []
+
+		for k, v in workers.items():
+
+			if len(v) == 0:
+				try:
+
+					dns_address = k.split('@')[1]
+					ip_srt = dns_address.split('.')[0]
+					ip_lst = ip_srt.split('-')
+					ip_lst.pop(0)
+					ip_address = '.'.join(ip_lst)
+					idle_worker_ips.append(ip_address)
+				except Exception as e:
+					print e
+					continue
+
+		#return if there's no idle worker
+		if not idle_worker_ips:
+			print 'no active worker ips'
+			return
+
+		all_running_tasks = self.client.list_tasks(cluster=self.CLUSTER,\
+		 serviceName=self.SERVICE_NAME, desiredStatus='RUNNING')
+
+
+		if all_running_tasks:
+
+			task_descriptions = self.client.describe_tasks(cluster=self.CLUSTER, tasks=all_running_tasks['taskArns'])
+
+		else:
+			print ' no running tasks'
+			return
+
+		idle_task_arns = []
+
+		try:
+
+			for task in task_descriptions['tasks']:
+
+				try:
+					if task['containers'][0]['networkInterfaces'][0]['privateIpv4Address'] in idle_worker_ips:
+
+						idle_task_arns.append(task['taskArn'])
+
+				except Exception as e:
+					print 'failed to get task description', e
+					continue
+
+		except Exception as e:
+			print 'could not retrieve task description', e
+
+		
+
+		for arn in idle_task_arns:
+			try:
+
+				self.client.stop_task(cluster=self.CLUSTER, task=arn, reason='task is idle')
+
+			except Exception as e:
+				print 'error stopping tasks', e
+
+
+		self.stdout.write('{} idle tasks stopped'.format(len(idle_task_arns)))
+
 
 	def stop_tasks(self):
 
@@ -85,8 +162,11 @@ class Command(BaseCommand):
 			time.sleep(5)
 
 		#waiting for active tasks to finish
+		self.stdout.write('Waiting for active tasks to finish')
 		while self.get_active_celery_worker_count() > 0:
-			self.stdout.write('Waiting for active tasks to finish')
+			#stop idle tasks
+			# self.stop_idle_tasks()
+
 			self.stdout.write('{} tasks are active'.format(self.get_active_celery_worker_count()))
 			time.sleep(5)
 
@@ -121,7 +201,7 @@ class Command(BaseCommand):
 		self.stdout.write('{} Update started'.format(datetime.now().isoformat(' ')))
 
 		#start tasks
-		self.run_tasks(50)
+		self.run_tasks(51)
 
 		#download new data
 		async_download()
