@@ -535,6 +535,20 @@ def get_hourly_sum(data, multiplier):
 			prev = rec
 	return hourly_sum
 
+def get_quarterly_sum(data, multiplier):
+	if len(data) < 1:
+		return [{'date': '2016-01-01 8:00', 'value': 0}]
+	hourly_sum = []
+	prev = data[0]
+	for i, rec in enumerate(data):
+		if parse_date(rec['date']).minute in [0,15,30,45]:
+			prev_value = float(prev['value']) if prev['value'] is not None else 0
+			rec_value = float(rec['value']) if rec['value'] is not None else 0
+			value = rec_value - prev_value if rec_value > prev_value else 0
+			hourly_sum.extend([{'date':rec['date'], 'value':value*multiplier}])
+			prev = rec
+	return hourly_sum
+
 def get_daily_sum(data, reset_hr, reset_min):
 	if len(data) < 1:
 		return [{'date': '2016-01-01 8:00', 'value': 0}]

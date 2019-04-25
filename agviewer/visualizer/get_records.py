@@ -1697,7 +1697,7 @@ def make_list(data, code):
 		return {'ECRN-50.Perc.vol.[ml]': get_hourly_sum(data, 5)}
 	#Flow Meter
 	if code == '183':
-		accum_data = get_hourly_sum(data,1)
+		accum_data = get_quarterly_sum(data,1)
 		return {
 			'Flow.Meter.[L/s]': [{'date': rec['date'],
 			'value':convert_sca(int(rec['value']), code, 'flow')} for rec in accum_data]
@@ -2389,7 +2389,7 @@ def get_voltage_data(widget, user):
 			raw_data = load_data(sensor[1], sensor[2]+'-'+sensor[3], sensor[0], dt_from, dt_to)
 			#222: LWS Leaf Wetness Sensor, 183: Flow Meter Sensor, 221: PS-1 Pressure Switch
 			#189: ECRN-50.Perc.[mm]
-			if sensor[2] in ['222', '180', '183', '221', '189']:
+			if sensor[2] in ['222', '180', '221', '189']:
 				accum_data = get_hourly_sum(raw_data, 1)
 				raw_data = accum_data
 			#187: ECRN-100.Perc.[mm]
@@ -2399,6 +2399,9 @@ def get_voltage_data(widget, user):
 			#188: ECRN-50.Perc.vol.[ml]
 			if sensor[2] in ['188']:
 				accum_data = get_hourly_sum(raw_data, 5)
+				raw_data = accum_data
+			if sensor[2] in ['183']:
+				accum_data = get_quarterly_sum(raw_data, 1)
 				raw_data = accum_data
 	# vwc = convert_sca(data['value'], sens[2], 'moist') if data['value'] is not None else data['value']
 		if len(raw_data) < 1:
