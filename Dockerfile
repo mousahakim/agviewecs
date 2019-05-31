@@ -10,4 +10,4 @@ RUN pip install --trusted-host pypi.python.org -r ../requirements.txt
 
 EXPOSE 80
 
-CMD ["celery", "-A", "morph2o", "worker"]
+CMD ["celery", "-A", "morph2o", "worker", "-n", "@%h", "--max-tasks-per-child=1"]
