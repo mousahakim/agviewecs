@@ -303,7 +303,7 @@ class Alert:
 			 					alert_event.save()
 			 					print 'creating new event success'
 			 					print alert_event.t_notify
-			 					# async_alert.delay(event_id)
+			 					# async_alert(event_id)
 			 				except AlertEvents.DoesNotExist as e:
 			 					print 'alert event already exists.'
 			 					print e
@@ -321,7 +321,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 				print 'editing old event success'
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
@@ -339,7 +339,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
 			 					print e
@@ -363,7 +363,7 @@ class Alert:
 			 					alert_event.notify = False
 			 					alert_event.snoozed = snoozed
 			 					alert_event.save()
-			 					# async_alert.delay(event_id)
+			 					# async_alert(event_id)
 			 				except (IntegrityError, AlertEvents.DoesNotExist) as e:
 			 					print 'alert event already exists.'
 			 					print e
@@ -377,7 +377,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
 			 					print e
@@ -392,7 +392,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
 			 					print e
@@ -412,7 +412,7 @@ class Alert:
 			 					alert_event.notify = False
 			 					alert_event.snoozed = snoozed
 			 					alert_event.save()
-			 					# async_alert.delay(event_id)
+			 					# async_alert(event_id)
 			 				except (IntegrityError, AlertEvents.DoesNotExist) as e:
 			 					print 'alert event already exists.'
 			 					print e
@@ -426,7 +426,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
 			 					print e
@@ -441,7 +441,7 @@ class Alert:
 				 				#do not send email/sms notification if snoozed
 			 					if snoozed:
 			 						return
-				 				async_alert.delay(last_event.event_id)
+				 				async_alert(last_event.event_id)
 				 			except IntegrityError as e:
 				 				print 'alert event already exists.'
 			 					print e
