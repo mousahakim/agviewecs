@@ -212,6 +212,13 @@ class Command(BaseCommand):
 			self.stdout.write('{} tasks remain in queue.'.format(self.get_redis_queue_lenght()))
 			time.sleep(5)
 
+		#wait for active download tasks to finish
+		while self.get_active_celery_worker_count() > 0:
+			#stop idle tasks
+			# self.stop_idle_tasks()
+
+			self.stdout.write('{} tasks are active'.format(self.get_active_celery_worker_count()))
+			time.sleep(5)
 
 		#update all widgets
 		async_update()
