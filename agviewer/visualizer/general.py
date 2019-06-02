@@ -303,7 +303,9 @@ class Alert:
 			 					alert_event.save()
 			 					print 'creating new event success'
 			 					print alert_event.t_notify
-			 					# async_alert(event_id)
+								if snoozed:
+									return
+			 					async_alert(event_id)
 			 				except AlertEvents.DoesNotExist as e:
 			 					print 'alert event already exists.'
 			 					print e
@@ -363,7 +365,9 @@ class Alert:
 			 					alert_event.notify = False
 			 					alert_event.snoozed = snoozed
 			 					alert_event.save()
-			 					# async_alert(event_id)
+			 					if snoozed:
+									return
+			 					async_alert(event_id)
 			 				except (IntegrityError, AlertEvents.DoesNotExist) as e:
 			 					print 'alert event already exists.'
 			 					print e
@@ -412,7 +416,9 @@ class Alert:
 			 					alert_event.notify = False
 			 					alert_event.snoozed = snoozed
 			 					alert_event.save()
-			 					# async_alert(event_id)
+			 					if snoozed:
+									return
+			 					async_alert(event_id)
 			 				except (IntegrityError, AlertEvents.DoesNotExist) as e:
 			 					print 'alert event already exists.'
 			 					print e
