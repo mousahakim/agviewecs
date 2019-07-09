@@ -1148,11 +1148,11 @@ def stat_cportions_acc(user, db, station, sensor):
 		# 	'date': json.loads(rec['data'])['date'],
 		# 	'value':convert_sca(float(json.loads(rec['data'])[sensor] and json.loads(rec['data'])[sensor] or 0),code,extract)} for rec in records]
 	# print raw_data
-	cportions_data = calculate_cportions(raw_data, RESET_DATE)
+	cportions_data = calculate_cportions(get_hourly_avg(raw_data,0,1), RESET_DATE)
 	# return int(cportions_data[len(cportions_data)-1]['accumulation'])
 	return {
 		'success': True,
-		'value': int(cportions_data[len(cportions_data)-1]['accumulation']),
+		'value': round(cportions_data[-1]['accumulation']),
 		'message': '',
 		'date_to': raw_data[-1]['date'],
 		'unit': ''
@@ -1208,7 +1208,7 @@ def get_cportions_acc(user, db, station, sensor):
 		# 	'date': json.loads(rec['data'])['date'],
 		# 	'value':convert_sca(float(json.loads(rec['data'])[sensor] and json.loads(rec['data'])[sensor] or 0),code,extract)} for rec in records]
 	# print raw_data
-	cportions_data = calculate_cportions(raw_data, RESET_DATE)
+	cportions_data = calculate_cportions(get_hourly_avg(raw_data, 0, 1), RESET_DATE)
 	return int(cportions_data[len(cportions_data)-1]['accumulation'])
 
 
@@ -2051,8 +2051,8 @@ def get_cportions_data(widget_data, user):
 			print 'No data found in the local database.'
 			return []
 		raw_data = load_data(s_temp[1], s_temp[2], s_temp[0], dt_reset, dt_to)
-		cportions = calculate_cportions(raw_data, RESET_DATE)
-		cp_data = [{'date':portions['date'], 'value':portions['accumulation']} for portions in cportions if dt_from <= parse_date_s(portions['date']) <= dt_to]
+		cportions = calculate_cportions(get_hourly_avg(raw_data, 0, 1), RESET_DATE)
+		cp_data = [{'date':portions['date'], 'value':portions['accumulation']} for portions in cportions if dt_from <= parse_date(portions['date']) <= dt_to]
 		cp_data[0].update({'lineColor':line_color, 'type':chart_type})
 		return cp_data
 
@@ -2075,14 +2075,16 @@ def get_cportions_data(widget_data, user):
 def calculate_cportions(raw_data, RESET_DATE):
 	cportions = []
 	prev_portions = {'xi':0.0, 'inter_e':0.0, 'delt':0.0, 'portions':0.0, 'accumulation':0.0}	
+	print raw_data
 	for data in raw_data:
-		if parse_date_s(data['date']).minute != 0:
-			continue
-		if parse_date_s(data['date']).month == int(RESET_DATE.split('-')[0]) and parse_date_s(data['date']).day == 1 and parse_date_s(data['date']).hour == 8:
+		# if parse_date(data['date']).minute != 0:
+		# 	continue
+		if parse_date(data['date']).month == int(RESET_DATE.split('-')[0]) and parse_date(data['date']).day == 1 and parse_date(data['date']).hour == 8:
 			prev_portions = {'xi':0.0, 'inter_e':0.0, 'delt':0.0, 'portions':0.0, 'accumulation':0.0}
 		value = float(data['value']) if data['value'] is not None else 0
 		portions = chill_portions(value, prev_portions)
 		portions.update({'date': data['date']})
+		print portions
 		cportions.extend([portions])
 		prev_portions = portions
 	return cportions
