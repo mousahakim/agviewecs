@@ -2075,7 +2075,7 @@ def get_cportions_data(widget_data, user):
 def calculate_cportions(raw_data, RESET_DATE):
 	cportions = []
 	prev_portions = {'xi':0.0, 'inter_e':0.0, 'delt':0.0, 'portions':0.0, 'accumulation':0.0}	
-	print raw_data
+	# print raw_data
 	for data in raw_data:
 		# if parse_date(data['date']).minute != 0:
 		# 	continue
@@ -2084,7 +2084,7 @@ def calculate_cportions(raw_data, RESET_DATE):
 		value = float(data['value']) if data['value'] is not None else 0
 		portions = chill_portions(value, prev_portions)
 		portions.update({'date': data['date']})
-		print portions
+		# print portions
 		cportions.extend([portions])
 		prev_portions = portions
 	return cportions
@@ -2136,8 +2136,8 @@ def get_chill_hours_data(widget_data, user):
 		line_color = settings.calc_color['chilling_hours']
 	except (KeyError, Settings.DoesNotExist):
 		print 'KeyError or DoesNotExist'
-	print RESET_DATE
-	print threshold
+	# print RESET_DATE
+	# print threshold
 	if s_temp[0] == 'fc':
 		print 'Retrieving fieldclimate data from local database...'
 		entries = StationData.objects.filter(station_id=s_temp[1], database=s_temp[0])

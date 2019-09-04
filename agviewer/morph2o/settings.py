@@ -121,7 +121,7 @@ DATABASES = {
 		'USER': 'morph2odbuser',
 		'PASSWORD': 'Rah3lajan',
 		'HOST': '10.0.0.100',
-		'PORT': '',
+		'PORT': '6543',
     }
 }
 

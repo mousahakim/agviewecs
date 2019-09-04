@@ -297,7 +297,7 @@ def chill_hours(temp, threshold):
 	return False
 
 def saturation_ec(temp, vwc, ec, perm, offset, saturation, unit):
-	print temp, vwc
+	# print temp, vwc
 	if temp is None:
 		return None
 	if vwc is None:
