@@ -197,11 +197,12 @@ class Command(BaseCommand):
 
 	def handle(self, *args, **options):
 
+		t1 = time.perf_counter()
 
 		self.stdout.write('{} Update started'.format(datetime.now().isoformat(' ')))
 
 		#start tasks
-		self.run_tasks(51)
+		# self.run_tasks(51)
 
 		#download new data
 		async_download()
@@ -220,12 +221,30 @@ class Command(BaseCommand):
 			self.stdout.write('{} tasks are active'.format(self.get_active_celery_worker_count()))
 			time.sleep(5)
 
+		t2 = time.perf_counter()
+		self.stdout.write(self.style.SUCCESS('Download completed in {} minutes.'.format((t2-t1)/60)))
 		#update all widgets
 		async_update()
 
 
 		#stop tasks
-		self.stop_tasks()
+		# self.stop_tasks()
 
-		self.stdout.write(self.style.SUCCESS('{} Update completed'.format(datetime.now().isoformat(' '))))
+		# wait for update to finish
+		while self.get_redis_queue_lenght() > 0:
+
+			self.stdout.write('{} tasks remain in queue.'.format(self.get_redis_queue_lenght()))
+			time.sleep(5)
+
+		#wait for active update tasks to finish
+		while self.get_active_celery_worker_count() > 0:
+			#stop idle tasks
+			# self.stop_idle_tasks()
+
+			self.stdout.write('{} tasks are active'.format(self.get_active_celery_worker_count()))
+			time.sleep(5)
+
+		t2 = time.perf_counter()
+		self.stdout.write(self.style.SUCCESS('Update completed in {} minutes.'.format((t2-t1)/60)))
+		self.stdout.write(self.style.SUCCESS('Time: {}'.format(datetime.now().isoformat(' '))))
 
