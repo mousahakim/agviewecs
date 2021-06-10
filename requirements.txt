@@ -1,6 +1,6 @@
 Babel==2.3.4
 Cheetah==2.4.4
-Django==1.9.8
+Django==2.2.24
 Equation==1.2.01
 Pillow==4.3.0
 PyYAML==3.10
