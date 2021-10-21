@@ -1,4 +1,4 @@
-Babel==2.3.4
+Babel==2.9.1
 Cheetah==2.4.4
 Django==1.9.8
 Equation==1.2.01
