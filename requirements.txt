@@ -45,7 +45,7 @@ djangocms-video==2.0.4
 easy-thumbnails==2.4.2
 flower==0.9.1
 futures==3.0.5
-html5lib==0.999
+html5lib==0.999999999
 httplib2==0.8
 jsonfield==1.0.3
 jsonpatch==1.3
